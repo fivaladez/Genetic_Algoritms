@@ -22,9 +22,9 @@ class Population:
         :return: Integer with the summation of the distances between points (Project Specific)
         """
         mapping_table = {
-            1: (1, 1), 2: (1, 2), 3: (1, 3), 4: (1, 4), 5: (1, 5),
-            6: (2, 1), 7: (2, 2), 8: (2, 3), 9: (2, 4), 10: (2, 5),
-            11: (3, 1), 12: (3, 2), 13: (3, 3), 14: (3, 4)
+            1: (1, 7), 2: (2, 5), 3: (4, 4), 4: (2, 3), 5: (3, 2),
+            6: (1, 1), 7: (5, 1), 8: (7, 3), 9: (6, 6), 10: (10, 5),
+            11: (9, 8), 12: (13, 6), 13: (12, 3), 14: (13, 1)
         }
 
         def get_distance(p1, p2):
@@ -81,15 +81,56 @@ class Generation:
         """"""
         self.operator = reproduction_operator
 
-    def _get_tournament_winner(self, population):
-        """"""
-        return 1
+    def get_tournament_winner(self, population, percentage=.05):
+        """
 
-    def get_next_generation(self, population):
+        :param population: List with all the chromosomes
+        :param percentage: Floating number from 0-1
+        :return: List with the selected winner from the tournament (chromosome with less distance)
+        """
+        n_contenders = int((len(population)) * percentage)
+        n_chromosomes = len(population) - 1
+        contenders = dict()  # {key=index: value=distance}
+        i = 0
+        # Getting dictionary of "contenders"
+        while i < n_contenders:
+            contender_index = random.randint(0, n_chromosomes)
+            if contender_index not in contenders:
+                # For this step it is assumed that the distance is at the end of the list
+                contenders[contender_index] = population[contender_index][-1]
+                i += 1
+
+        # Looking for the winner
+        winner = -1
+        for key, value in contenders.items():
+            if winner != -1:
+                if winner[-1] > value:
+                    winner = population[key]
+            else:
+                winner = population[key]
+
+        return winner
+
+    def reproduction_operator(self, chromosome):
         """"""
-        iterations = len(population)
+        start = 1
+        end = len(chromosome) - 2
+        length = random.randint(2, end)
+
+        return list()
+
+    def get_next_generation(self, population, iterations=1):
+        """
+
+        :param population: List with all the chromosomes from the population
+        :param iterations: Integer with the number of required chromosome childes
+        :return: List with all the new population (childes)
+        """
         child_population = list()
-        for _ in iterations:
-            child_chromosome = self._get_tournament_winner(population)
-            child_population.append(child_chromosome)
+        for _ in range(0, iterations):
+            winner = self.get_tournament_winner(population)
+            print(winner)
+            child_chromosome2 = self.reproduction_operator(winner)
+            print(child_chromosome2)
+            child_population.append(winner)
         return child_population
