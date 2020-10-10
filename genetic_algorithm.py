@@ -96,8 +96,8 @@ class GeneticAlgorithm:
 
     def _reproduction(self, chromosome):
         """"""
-        chromosome.pop()  # Removing aptitude_function
         child_chromosome = chromosome[:]
+        child_chromosome.pop()  # Removing aptitude_function
         option = random.randrange(0, 2)  # Randomly select a reproduction option
         if option == 0:
             # Getting random points for first chunk excluding first and last item (0, -1)
@@ -128,8 +128,11 @@ class GeneticAlgorithm:
             chunk_size = end_index_a - init_index_a
 
             # Getting a random index for the second chunk
-            init_index_b = random.randint(end_index_a + 1, self.n_genes - chunk_size - 2)
-            end_index_b = init_index_b + chunk_size
+            while True:
+                init_index_b = random.randint(end_index_a + 1, self.n_genes - chunk_size - 2)
+                end_index_b = init_index_b + chunk_size
+                if end_index_b <= (self.n_genes - 2):
+                    break
 
             # Getting chunks
             first_chunk = child_chromosome[init_index_a: end_index_a + 1]
@@ -140,7 +143,7 @@ class GeneticAlgorithm:
 
             # Swapping the chunks in the child chromosome
             swap_index = 0
-            for idx in range(init_index_a, end_index_a + 1):
+            for idx in range(init_index_a, end_index_a):
                 child_chromosome[idx] = second_chunk[swap_index]
                 child_chromosome[init_index_b] = first_chunk[swap_index]
                 init_index_b += 1
@@ -156,10 +159,11 @@ class GeneticAlgorithm:
         :return: List with all the new population (childes)
         """
         child_population = list()
-        for _ in range(0, childes):
+        for child in range(0, childes):
+            print("\nChild: {}".format(child))
             winner = self._get_tournament_winner(population)
-            print(winner)
-            child_chromosome2 = self._reproduction(winner)
-            print(child_chromosome2)
-            child_population.append(winner)
+            print("Winner: {}".format(winner))
+            child_chromosome = self._reproduction(winner)
+            print("Child:  {}".format(child_chromosome), end="\n\n")
+            child_population.append(child_chromosome)
         return child_population

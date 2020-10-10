@@ -14,6 +14,6 @@ if __name__ == '__main__':
 
     # Get the next generation
     population_child = genetic_algorithm.get_next_generation(population=parent_population,
-                                                             childes=1)
+                                                             childes=100)
     print("\nChild population sizes: [{}, {}]\n".format(len(population_child),
                                                         len(population_child[0])))
