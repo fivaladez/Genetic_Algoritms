@@ -111,11 +111,17 @@ class Generation:
 
         return winner
 
-    def reproduction_operator(self, chromosome):
+    def reproduction(self, chromosome):
         """"""
         start = 1
         end = len(chromosome) - 2
-        length = random.randint(2, end)
+        length = random.randint(start, int(end/2))
+        first_part = chromosome[start:start+length]
+        second_part = chromosome[start+length: start+length+length+1]
+        print("Start {} - End {} - Length {} - First part {} - Second part {}".format(
+            start, end, length, first_part, second_part
+        ))
+
 
         return list()
 
@@ -130,7 +136,7 @@ class Generation:
         for _ in range(0, iterations):
             winner = self.get_tournament_winner(population)
             print(winner)
-            child_chromosome2 = self.reproduction_operator(winner)
+            child_chromosome2 = self.reproduction(winner)
             print(child_chromosome2)
             child_population.append(winner)
         return child_population
