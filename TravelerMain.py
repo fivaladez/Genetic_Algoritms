@@ -84,8 +84,7 @@ def mutateChromosome(chromosome):
             sectionForI += 1
 
     else:
-        # Reproduction Method 2
-        sectionForI = 0
+        # Getting first indexes
         while True:
             initIndexA = random.randint(0, ((len(localChromosome) - 1) // 2))
             endIndexA = random.randint(0, ((len(localChromosome) - 1) // 2))
@@ -93,10 +92,15 @@ def mutateChromosome(chromosome):
                 break
         if initIndexA > endIndexA:
             initIndexA, endIndexA = endIndexA, initIndexA
+
+
         firstChunk = localChromosome[initIndexA:endIndexA + 1]
         chunkSize = endIndexA - initIndexA
+
         initIndexB = random.randint(endIndexA + 1, len(localChromosome) - chunkSize - 1)
         secondChunk = localChromosome[initIndexB:initIndexB + chunkSize + 1]
+
+        sectionForI = 0
         for idx in range(initIndexA, endIndexA + 1):
             localChromosome[idx] = secondChunk[sectionForI]
             localChromosome[initIndexB] = firstChunk[sectionForI]

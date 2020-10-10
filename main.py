@@ -1,19 +1,19 @@
-import genetic_algorithm as ga
+from genetic_algorithm import GeneticAlgorithm as GA
 
 if __name__ == '__main__':
-    # Get initial population
-    population = ga.Population(100, 14).get_population()
-    """ == Debug Code ==
-    for chromosome in population:
-        print(chromosome)
-    """
-    print("\n[{}, {}]".format(len(population), len(population[0])))
+    # Getting initial random population
+    genetic_algorithm = GA(100, 14)
+    parent_population = genetic_algorithm.get_random_population()
+    print("\tInitial population sizes: [{}, {}]".format(len(parent_population),
+                                                        len(parent_population[0])))
 
-    population_parent = population
-    population_child = ga.Generation().get_next_generation(population=population_parent,
-                                                           iterations=1)
-    """ == Debug code ==
-    for chromosome_child in population_child:
-        print(chromosome_child)
-    """
-    print("\n[{}, {}]".format(len(population_child), len(population_child[0])))
+    # Adding at the end of each chromosome the summation of the distances between points
+    genetic_algorithm.add_aptitude_function(parent_population)
+    print("\tNew population sizes: [{}, {}]".format(len(parent_population),
+                                                    len(parent_population[0])))
+
+    # Get the next generation
+    population_child = genetic_algorithm.get_next_generation(population=parent_population,
+                                                             childes=1)
+    print("\nChild population sizes: [{}, {}]\n".format(len(population_child),
+                                                        len(population_child[0])))
