@@ -1,6 +1,7 @@
 """This file contains the logic to use and create a genetic algorithm"""
 import random
 import math
+import matplotlib.pyplot as plt
 
 
 class GeneticAlgorithm:
@@ -14,6 +15,12 @@ class GeneticAlgorithm:
         """
         self.n_chromosomes = chromosomes
         self.n_genes = genes
+        self.mapping_table = {
+            1: (1, 7), 2: (2, 5), 3: (4, 4), 4: (2, 3), 5: (3, 2),
+            6: (1, 1), 7: (5, 1), 8: (7, 3), 9: (6, 6), 10: (10, 5),
+            11: (9, 8), 12: (13, 6), 13: (12, 3), 14: (13, 1)
+        }
+        self.best_distances = list()
 
     def add_aptitude_function(self, population):
         """
@@ -25,18 +32,12 @@ class GeneticAlgorithm:
             """Get distance from two given points"""
             return math.sqrt(((p1[0] - p2[0]) ** 2) + ((p1[1] - p2[1]) ** 2))
 
-        mapping_table = {
-            1: (1, 7), 2: (2, 5), 3: (4, 4), 4: (2, 3), 5: (3, 2),
-            6: (1, 1), 7: (5, 1), 8: (7, 3), 9: (6, 6), 10: (10, 5),
-            11: (9, 8), 12: (13, 6), 13: (12, 3), 14: (13, 1)
-        }
-
         chromosome = 0
         while chromosome < self.n_chromosomes:
             summation, gene = 0, 0
             while gene + 1 < self.n_genes:
-                distance = get_distance(mapping_table.get(population[chromosome][gene]),
-                                        mapping_table.get(population[chromosome][gene + 1]))
+                distance = get_distance(self.mapping_table.get(population[chromosome][gene]),
+                                        self.mapping_table.get(population[chromosome][gene + 1]))
                 summation += int(distance)
                 gene += 1
 
@@ -167,3 +168,54 @@ class GeneticAlgorithm:
             print("Child:  {}".format(child_chromosome), end="\n\n")
             child_population.append(child_chromosome)
         return child_population
+
+    def graph(self, population, generation):
+        """"""
+        # Getting best chromosome from population and adding the distance to a global list
+        best_chromosome = -1
+        for chromosome in population:
+            if best_chromosome != -1:
+                if best_chromosome[-1] > chromosome[-1]:
+                    best_chromosome = chromosome
+            else:
+                best_chromosome = chromosome
+        self.best_distances.append(best_chromosome[-1])
+        print("Best chromosome: {}".format(best_chromosome))
+
+        # Getting coordinates for plotting them
+        coordinates_x , coordinates_y = [], []
+        for gene in best_chromosome[:-1]:
+            coordinates_x.append(self.mapping_table[gene][0])
+            coordinates_y.append(self.mapping_table[gene][1])
+
+        """
+        fig, (path, dst) = plt.subplots(1, 2, figsize=(10, 10))
+        path.scatter(coordinates_x, coordinates_y, color="red")
+        path.plot(coordinates_x, coordinates_y)
+        path.grid(color="gray", linestyle="--", linewidth=1, alpha=.4)
+        path.set_title("Best Chromosome {}".format(best_chromosome))
+
+        # axs[1, 0].scatter(coordinates_x, coordinates_y, color="red")
+        dst.plot([i for i in range(generation + 1)], self.best_distances)
+        dst.grid(color="gray", linestyle="--", linewidth=1, alpha=.4)
+        dst.set_title("Best Distances {}".format(self.best_distances))
+        """
+        plt.figure(1)
+        plt.scatter(coordinates_x, coordinates_y, color="red")
+        plt.plot(coordinates_x, coordinates_y)
+        plt.grid(color="gray", linestyle="--", linewidth=1, alpha=.4)
+        plt.title("Best Chromosome {}".format(best_chromosome))
+        plt.show(block=False)
+
+        plt.figure(2)
+        plt.plot([i for i in range(generation + 1)], self.best_distances)
+        plt.grid(color="gray", linestyle="--", linewidth=1, alpha=.4)
+        plt.title("Best Distances {}".format(self.best_distances))
+        plt.show(block=False)
+        plt.pause(1)
+
+        plt.figure(1)
+        plt.clf()
+
+        plt.figure(2)
+        plt.clf()

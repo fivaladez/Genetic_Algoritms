@@ -13,7 +13,15 @@ if __name__ == '__main__':
                                                     len(parent_population[0])))
 
     # Get the next generation
-    population_child = genetic_algorithm.get_next_generation(population=parent_population,
-                                                             childes=100)
-    print("\nChild population sizes: [{}, {}]\n".format(len(population_child),
-                                                        len(population_child[0])))
+    n_generations = 100
+    for i in range(0, n_generations):
+        child_population = genetic_algorithm.get_next_generation(population=parent_population,
+                                                                 childes=100)
+        print("Genaration #{}".format(i))
+        print("Child population sizes: [{}, {}]\n".format(len(child_population),
+                                                          len(child_population[0])))
+        genetic_algorithm.add_aptitude_function(child_population)
+        genetic_algorithm.graph(child_population, i)
+        parent_population = child_population
+
+    input("Pause")
