@@ -15,13 +15,13 @@ if __name__ == '__main__':
     # Get the next generation
     n_generations = 100
     for i in range(0, n_generations):
-        child_population = genetic_algorithm.get_next_generation(population=parent_population,
-                                                                 childes=100)
-        print("Genaration #{}".format(i))
-        print("Child population sizes: [{}, {}]\n".format(len(child_population),
-                                                          len(child_population[0])))
+        child_population = genetic_algorithm.get_next_generation(parent_population)
+        # print("Generation #{}".format(i))
+        # print("Child population sizes: [{}, {}]\n".format(len(child_population),
+        #                                                  len(child_population[0])))
         genetic_algorithm.add_aptitude_function(child_population)
         genetic_algorithm.graph(child_population, i)
         parent_population = child_population
 
+    print("The best chromosome from history was: {}".format(genetic_algorithm.best_chromosome))
     input("Pause")

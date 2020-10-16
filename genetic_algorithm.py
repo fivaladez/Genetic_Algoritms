@@ -21,6 +21,7 @@ class GeneticAlgorithm:
             11: (9, 8), 12: (13, 6), 13: (12, 3), 14: (13, 1)
         }
         self.best_distances = list()
+        self.best_chromosome = -1
 
     def add_aptitude_function(self, population):
         """
@@ -38,7 +39,7 @@ class GeneticAlgorithm:
             while gene + 1 < self.n_genes:
                 distance = get_distance(self.mapping_table.get(population[chromosome][gene]),
                                         self.mapping_table.get(population[chromosome][gene + 1]))
-                summation += int(distance)
+                summation += round(distance, 2)
                 gene += 1
 
             population[chromosome].append(summation)
@@ -75,6 +76,7 @@ class GeneticAlgorithm:
         """
         # Getting dictionary "contenders" -> {key=index: value=distance}
         n_contenders = int(self.n_chromosomes * percentage)
+        n_contenders = 1 if n_contenders < 1 else n_contenders  # Min value of 1 for n_contenders
         contenders = dict()
         i = 0
         while i < n_contenders:
@@ -99,19 +101,23 @@ class GeneticAlgorithm:
         """"""
         child_chromosome = chromosome[:]
         child_chromosome.pop()  # Removing aptitude_function
-        option = random.randrange(0, 2)  # Randomly select a reproduction option
+        option = random.randint(0, 1)  # Randomly select a reproduction option
         if option == 0:
             # Getting random points for first chunk excluding first and last item (0, -1)
             while True:
-                init_index = random.randint(1, (self.n_genes - 2) // 2)
-                end_index = random.randint(1, (self.n_genes - 2) // 2)
+                init_index = random.randint(0, self.n_genes - 1)
+                end_index = random.randint(init_index, self.n_genes - 1)
                 if init_index < end_index:
                     break
 
             # Getting inverted section -> [1,2,3] -> [3,2,1]
-            inverted_chunk = child_chromosome[end_index:(init_index - 1):-1]
+            revert_index = init_index - 1
+            if revert_index > 0:
+                inverted_chunk = child_chromosome[end_index:(init_index - 1):-1]
+            else:
+                inverted_chunk = child_chromosome[end_index::-1]
 
-            print("Inverted chunk {} - ({},{})".format(inverted_chunk, init_index, end_index))
+            # print("Inverted chunk {} - ({},{})".format(inverted_chunk, init_index, end_index))
 
             swap_index = 0
             for idx in range(init_index, end_index + 1):
@@ -120,8 +126,8 @@ class GeneticAlgorithm:
         else:
             # Getting random points for first chunk excluding first and last item (0, -1)
             while True:
-                init_index_a = random.randint(1, (self.n_genes - 2) // 2)
-                end_index_a = random.randint(1, (self.n_genes - 2) // 2)
+                init_index_a = random.randint(0, (self.n_genes - 1) // 2)
+                end_index_a = random.randint(init_index_a, (self.n_genes - 1) // 2)
                 if init_index_a < end_index_a:
                     break
 
@@ -130,21 +136,21 @@ class GeneticAlgorithm:
 
             # Getting a random index for the second chunk
             while True:
-                init_index_b = random.randint(end_index_a + 1, self.n_genes - chunk_size - 2)
+                init_index_b = random.randint(end_index_a + 1, self.n_genes - chunk_size - 1)
                 end_index_b = init_index_b + chunk_size
-                if end_index_b <= (self.n_genes - 2):
+                if end_index_b < self.n_genes:
                     break
 
             # Getting chunks
             first_chunk = child_chromosome[init_index_a: end_index_a + 1]
             second_chunk = child_chromosome[init_index_b:end_index_b + 1]
 
-            print("1° chunk {}, Indexes ({},{})".format(first_chunk, init_index_a, end_index_a))
-            print("2° chunk {}, Indexes ({},{})".format(second_chunk, init_index_b, end_index_b))
+            # print("1° chunk {}, Indexes ({},{})".format(first_chunk, init_index_a, end_index_a))
+            # print("2° chunk {}, Indexes ({},{})".format(second_chunk, init_index_b, end_index_b))
 
             # Swapping the chunks in the child chromosome
             swap_index = 0
-            for idx in range(init_index_a, end_index_a):
+            for idx in range(init_index_a, end_index_a + 1):
                 child_chromosome[idx] = second_chunk[swap_index]
                 child_chromosome[init_index_b] = first_chunk[swap_index]
                 init_index_b += 1
@@ -152,20 +158,18 @@ class GeneticAlgorithm:
 
         return child_chromosome
 
-    def get_next_generation(self, population, childes=1):
+    def get_next_generation(self, population):
         """
 
         :param population: List with all the chromosomes from the population
-        :param childes: Integer with the number of required chromosome childes
         :return: List with all the new population (childes)
         """
         child_population = list()
-        for child in range(0, childes):
-            print("\nChild: {}".format(child))
-            winner = self._get_tournament_winner(population)
-            print("Winner: {}".format(winner))
-            child_chromosome = self._reproduction(winner)
-            print("Child:  {}".format(child_chromosome), end="\n\n")
+        for n_chromosome in range(0, self.n_chromosomes):
+            winner_chromosome = self._get_tournament_winner(population)
+            # print("\nWinner: {}".format(winner_chromosome))
+            child_chromosome = self._reproduction(winner_chromosome)
+            # print("Child:  {}".format(child_chromosome), end="\n\n")
             child_population.append(child_chromosome)
         return child_population
 
@@ -179,27 +183,24 @@ class GeneticAlgorithm:
                     best_chromosome = chromosome
             else:
                 best_chromosome = chromosome
+
+            # Saving the best chromosome in history
+            if self.best_chromosome != -1:
+                if self.best_chromosome[-1] > best_chromosome[-1]:
+                    self.best_chromosome = best_chromosome
+            else:
+                self.best_chromosome = best_chromosome
+
         self.best_distances.append(best_chromosome[-1])
-        print("Best chromosome: {}".format(best_chromosome))
+        print("Best chromosome from generation #{}:  {}".format(generation, best_chromosome))
 
         # Getting coordinates for plotting them
-        coordinates_x , coordinates_y = [], []
-        for gene in best_chromosome[:-1]:
+        coordinates_x, coordinates_y = [], []
+        for gene in self.best_chromosome[:-1]:
             coordinates_x.append(self.mapping_table[gene][0])
             coordinates_y.append(self.mapping_table[gene][1])
 
-        """
-        fig, (path, dst) = plt.subplots(1, 2, figsize=(10, 10))
-        path.scatter(coordinates_x, coordinates_y, color="red")
-        path.plot(coordinates_x, coordinates_y)
-        path.grid(color="gray", linestyle="--", linewidth=1, alpha=.4)
-        path.set_title("Best Chromosome {}".format(best_chromosome))
-
-        # axs[1, 0].scatter(coordinates_x, coordinates_y, color="red")
-        dst.plot([i for i in range(generation + 1)], self.best_distances)
-        dst.grid(color="gray", linestyle="--", linewidth=1, alpha=.4)
-        dst.set_title("Best Distances {}".format(self.best_distances))
-        """
+        # Plotting
         plt.figure(1)
         plt.scatter(coordinates_x, coordinates_y, color="red")
         plt.plot(coordinates_x, coordinates_y)
@@ -210,7 +211,7 @@ class GeneticAlgorithm:
         plt.figure(2)
         plt.plot([i for i in range(generation + 1)], self.best_distances)
         plt.grid(color="gray", linestyle="--", linewidth=1, alpha=.4)
-        plt.title("Best Distances {}".format(self.best_distances))
+        plt.title("Best Distances {}".format(self.best_distances[-1]))
         plt.show(block=False)
         plt.pause(1)
 
