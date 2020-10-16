@@ -1,4 +1,4 @@
-from genetic_algorithm import GeneticAlgorithm as GA
+from genetic_algorithm_traveler import GeneticAlgorithm as GA
 
 if __name__ == '__main__':
     # Getting initial random population
