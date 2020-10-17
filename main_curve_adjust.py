@@ -6,7 +6,7 @@ if __name__ == '__main__':
     X, Y = 1.5, 174.57
     POPULATION_SIZE = 100
     CHROMOSOME_SIZE = 7
-    GENERATIONS = 100
+    GENERATIONS = 1
 
     # Getting random initial population
     curve_adjust = GeneticAlgorithm(X, Y, POPULATION_SIZE, CHROMOSOME_SIZE)
