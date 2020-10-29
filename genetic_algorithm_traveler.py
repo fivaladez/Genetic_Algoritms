@@ -206,12 +206,14 @@ class GeneticAlgorithm:
         plt.plot(coordinates_x, coordinates_y)
         plt.grid(color="gray", linestyle="--", linewidth=1, alpha=.4)
         plt.title("Best Chromosome {}".format(best_chromosome))
+        plt.tight_layout()
         plt.show(block=False)
 
         plt.figure(2)
         plt.plot([i for i in range(generation + 1)], self.best_distances)
         plt.grid(color="gray", linestyle="--", linewidth=1, alpha=.4)
         plt.title("Best Distances {}".format(self.best_distances[-1]))
+        plt.tight_layout()
         plt.show(block=False)
         plt.pause(1)
 

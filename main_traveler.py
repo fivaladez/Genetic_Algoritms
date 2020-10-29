@@ -2,7 +2,7 @@ from genetic_algorithm_traveler import GeneticAlgorithm as GA
 
 if __name__ == '__main__':
     # Getting initial random population
-    genetic_algorithm = GA(100, 14)
+    genetic_algorithm = GA(500, 14)
     parent_population = genetic_algorithm.get_random_population()
     print("\tInitial population sizes: [{}, {}]".format(len(parent_population),
                                                         len(parent_population[0])))
@@ -13,7 +13,7 @@ if __name__ == '__main__':
                                                     len(parent_population[0])))
 
     # Get the next generation
-    n_generations = 100
+    n_generations = 80
     for i in range(0, n_generations):
         child_population = genetic_algorithm.get_next_generation(parent_population)
         # print("Generation #{}".format(i))

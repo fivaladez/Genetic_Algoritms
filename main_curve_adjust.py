@@ -3,9 +3,9 @@ from genetic_algorithm_curve_adjust import GeneticAlgorithm
 if __name__ == '__main__':
     # Fixed values 77.3781, 76.96017
     X, Y = 1.5, 77.3781
-    POPULATION_SIZE = 100
+    POPULATION_SIZE = 400
     CHROMOSOME_SIZE = 7
-    GENERATIONS = 20
+    GENERATIONS = 12
     """
     # A=1,    B=2,    C=6,     D=3.2,  E=0.5,  F=1,    G=7
     # A'=25,  B'=51,  C'=153,  D'=81,  E'=12,  F'=25,  G'=178
