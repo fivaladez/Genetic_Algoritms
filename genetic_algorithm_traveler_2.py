@@ -108,14 +108,16 @@ class GeneticAlgorithm:
         else:
             # Getting a random index for chunks A and B
             while True:
-                start_index_a = np.random.randint(0, self.CHROMOSOME_SIZE // 2, dtype=np.uint8)
-                end_index_a = np.random.randint(start_index_a, self.CHROMOSOME_SIZE // 2,
+                start_index_a = np.random.randint(0, self.CHROMOSOME_SIZE - 3, dtype=np.uint8)
+                end_index_a = np.random.randint(start_index_a, self.CHROMOSOME_SIZE - 2,
                                                 dtype=np.uint8)
                 if start_index_a > end_index_a:
                     continue  # Try again
 
                 chunk_size = end_index_a - start_index_a
 
+                if end_index_a + 1 >= self.CHROMOSOME_SIZE - chunk_size:
+                    continue
                 start_index_b = np.random.randint(end_index_a + 1,
                                                   self.CHROMOSOME_SIZE - chunk_size, dtype=np.uint8)
                 end_index_b = start_index_b + chunk_size

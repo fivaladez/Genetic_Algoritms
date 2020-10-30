@@ -2,8 +2,8 @@ from genetic_algorithm_traveler_2 import GeneticAlgorithm
 import numpy as np
 
 if __name__ == '__main__':
-    POPULATION_SIZE = 500
-    GENERATIONS = 50
+    POPULATION_SIZE = 200
+    GENERATIONS = 100
 
     # Getting initial random population
     traveler = GeneticAlgorithm(POPULATION_SIZE)
