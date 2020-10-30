@@ -1,6 +1,7 @@
 """Contains the logic to use and create a genetic algorithm to solve the traveler problem."""
 import numpy as np
 import math
+import matplotlib.pyplot as plt
 
 
 class GeneticAlgorithm:
@@ -184,3 +185,53 @@ class GeneticAlgorithm:
                                                    best_chromosome[1])
 
         return childes_population, childes_aptitude_function
+
+    def graph(self, population, aptitude_function, generation):
+        """"""
+        best_chromosome = self.get_best_from_population(population, aptitude_function)
+        print("Best chromosome from generation #{}:  {}".format(generation, best_chromosome))
+
+        # Getting coordinates for plotting them
+        coordinates_x, coordinates_y = [], []
+        for gene in best_chromosome[0]:
+            coordinates_x.append(self.mapping_table[gene][0])
+            coordinates_y.append(self.mapping_table[gene][1])
+
+        best_coordinates_x, best_coordinates_y = [], []
+        for gene in self.best_chromosome[0]:
+            best_coordinates_x.append(self.mapping_table[gene][0])
+            best_coordinates_y.append(self.mapping_table[gene][1])
+
+        # Plotting
+        plt.figure(1)
+        plt.scatter(coordinates_x, coordinates_y, color="red")
+        plt.plot(coordinates_x, coordinates_y)
+        plt.grid(color="gray", linestyle="--", linewidth=1, alpha=.4)
+        plt.title("Best Chromosome {}".format(best_chromosome))
+        plt.tight_layout()
+        plt.show(block=False)
+
+        plt.figure(2)
+        plt.scatter(best_coordinates_x, best_coordinates_y, color="red")
+        plt.plot(best_coordinates_x, best_coordinates_y)
+        plt.grid(color="gray", linestyle="--", linewidth=1, alpha=.4)
+        plt.title("Best Chromosome from History {}".format(self.best_chromosome))
+        plt.tight_layout()
+        plt.show(block=False)
+
+        plt.figure(3)
+        plt.plot(np.arange(0, generation, dtype=np.uint16), self.aptitude_function_history)
+        plt.grid(color="gray", linestyle="--", linewidth=1, alpha=.4)
+        plt.title("Best Distances {}".format(self.aptitude_function_history[-1]))
+        plt.tight_layout()
+        plt.show(block=False)
+        plt.pause(1)
+
+        plt.figure(1)
+        plt.clf()
+
+        plt.figure(2)
+        plt.clf()
+
+        plt.figure(3)
+        plt.clf()

@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
     for generation in range(1, GENERATIONS + 1):
         child_population, aptitude_function = traveler.get_next_generation(parent_population)
-        # traveler.graph(child_population, aptitude_function, generation)
+        traveler.graph(child_population, aptitude_function, generation)
         parent_population = child_population
         # print("\n\t==================================================\n\n")
 
