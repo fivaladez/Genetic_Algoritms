@@ -2,8 +2,8 @@ from genetic_algorithm_traveler_2 import GeneticAlgorithm
 import numpy as np
 
 if __name__ == '__main__':
-    POPULATION_SIZE = 50
-    GENERATIONS = 1
+    POPULATION_SIZE = 500
+    GENERATIONS = 50
 
     # Getting initial random population
     traveler = GeneticAlgorithm(POPULATION_SIZE)
@@ -14,7 +14,7 @@ if __name__ == '__main__':
         child_population, aptitude_function = traveler.get_next_generation(parent_population)
         # traveler.graph(child_population, aptitude_function, generation)
         parent_population = child_population
-        print("\n\t==================================================\n\n")
+        # print("\n\t==================================================\n\n")
 
     print("Best from History {}".format(traveler.best_chromosome))
     print("Aptitude function History {}".format(traveler.aptitude_function_history))
