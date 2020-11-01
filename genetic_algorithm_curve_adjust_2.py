@@ -114,7 +114,7 @@ class GeneticAlgorithm:
             daughter = np.copy(mother[:index + 1])
             daughter = np.append(daughter, np.copy(father[index + 1:]))
 
-            print("Index {}, Son {}, Daughter {}".format(index, son, daughter))
+            # print("Index {}, Son {}, Daughter {}".format(index, son, daughter))
 
         else:
             # Getting indexes - [first_part ... cut_part ... second_part]
@@ -156,11 +156,12 @@ class GeneticAlgorithm:
             daughter = np.copy(mother[:first_index + 1])
             daughter = np.append(daughter, [daughter_cut_point])
             daughter = np.append(daughter, np.copy(father[second_index:]))
-
+            """
             print("Cut index {} - Values {}, {}".format(first_index + 1, father[first_index + 1],
                                                         mother[first_index + 1]))
             print("Bits {}, {}".format(first_cut_index, second_cut_index))
             print("Son {}, Daughter {}".format(son_cut_point, daughter_cut_point))
+            """
 
         return son, daughter
 
@@ -180,17 +181,16 @@ class GeneticAlgorithm:
         """"""
         best_chromosome = self.get_best_from_population(population, aptitude_function)
 
-        if len(self.best_chromosome) > 1:
-            plt.figure(1)
-            plt.plot(self.CURVE_X, self.CURVE_Y, color="blue")
-            plt.grid(color="gray", linestyle="--")
-            plt.title("Base Curve {}".format(self.CURVE_CONSTANTS))
-            plt.show(block=False)
+        plt.figure(1)
+        plt.plot(self.CURVE_X, self.CURVE_Y, color="blue")
+        plt.grid(color="gray", linestyle="--")
+        plt.title("Base Curve {}".format(self.CURVE_CONSTANTS))
+        plt.show(block=False)
 
         plt.figure(2)
         plt.plot(self.CURVE_X, self.get_y(best_chromosome[0], self.CURVE_X), color="red")
         plt.grid(color="gray", linestyle="--")
-        plt.title("Current Curve {}, {}".format(best_chromosome[0], best_chromosome[1]))
+        plt.title("Current Curve {}, {}".format(best_chromosome[0] / self.WEIGHT, best_chromosome[1]))
         plt.show(block=False)
 
         plt.figure(3)
@@ -205,6 +205,38 @@ class GeneticAlgorithm:
         plt.figure(3)
         plt.clf()
 
+    def add_mutation(self, population):
+        """"""
+        # Getting mutation_indexes
+        mutations = int(self.POPULATION_SIZE * self.MUTATION)
+        mutations = 1 if mutations < 1 else mutations
+        mutation_indexes = np.random.randint(0, self.POPULATION_SIZE, mutations)
+        gen_size = 8  # 8 bits for a number from 0 - 255
+        print("\nMutation indexes from population {}".format(mutation_indexes))
+        for population_index in mutation_indexes:
+            chromosome = population[population_index]
+            chromosome_index = np.random.randint(0, self.CHROMOSOME_SIZE)
+            print("\nChromosome {}, Index {}".format(chromosome, chromosome_index))
+            gen = chromosome[chromosome_index]
+            gen_index = np.random.randint(1, gen_size + 1)  # You need to start from 1
+            print("Gen {}, Index (bit) {}".format(gen, gen_index))
+            gen ^= (1 << (gen_index - 1))
+            print("Gen mutated {}, Mask {}".format(gen, (1 << gen_index)))
+            population[population_index][chromosome_index] = gen
+            print("Gen mutated original {}".format(population[population_index][chromosome_index]))
+            print("Chromosome mutated original {}".format(population[population_index]))
+
+            chromosome_index = np.random.randint(0, self.CHROMOSOME_SIZE)
+            print("\nChromosome {}, Index {}".format(chromosome, chromosome_index))
+            gen = chromosome[chromosome_index]
+            gen_index = np.random.randint(1, gen_size + 1)  # You need to start from 1
+            print("Gen {}, Index (bit) {}".format(gen, gen_index))
+            gen ^= (1 << (gen_index - 1))
+            print("Gen mutated {}, Mask {}".format(gen, (1 << gen_index)))
+            population[population_index][chromosome_index] = gen
+            print("Gen mutated original {}".format(population[population_index][chromosome_index]))
+            print("Chromosome mutated original {}".format(population[population_index]))
+
     def get_next_generation(self, population):
         """"""
         aptitude_function = self.get_aptitude_function(population)
@@ -218,8 +250,8 @@ class GeneticAlgorithm:
 
             # Reproduce parents to get childes
             son, daughter = self.reproduction(father_chromosome, mother_chromosome)
-            print("Parents: {}, {}".format(father_chromosome, mother_chromosome))
-            print("Childes: {}, {}\n".format(son, daughter))
+            # print("Parents: {}, {}".format(father_chromosome, mother_chromosome))
+            # print("Childes: {}, {}\n".format(son, daughter))
 
             # Add childes as rows for the new population (new generation)
             child_population = np.append(child_population, [son], axis=0)
@@ -230,10 +262,13 @@ class GeneticAlgorithm:
             mother_chromosome = self.get_tournament_winner(population, aptitude_function)
 
             son, daughter = self.reproduction(father_chromosome, mother_chromosome)
-            print("Parents: {}, {}".format(father_chromosome, mother_chromosome))
-            print("Childes: {}, {}\n".format(son, daughter))
+            # print("Parents: {}, {}".format(father_chromosome, mother_chromosome))
+            # print("Childes: {}, {}\n".format(son, daughter))
 
             childes_population = np.append(child_population, [son], axis=0)
+
+        # Getting new population with some mutations
+        self.add_mutation(child_population)
 
         # Getting the new aptitude function from new population
         aptitude_function = self.get_aptitude_function(child_population)
