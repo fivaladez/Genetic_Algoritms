@@ -3,7 +3,7 @@ from genetic_algorithm_curve_adjust_2 import GeneticAlgorithm
 if __name__ == '__main__':
     CURVE_CONSTANTS = [8, 25, 4, 45, 10, 17, 35]  # A, B, C, D, E, F, G
     WEIGHT = 5
-    POPULATION_SIZE = 500
+    POPULATION_SIZE = 1000
     GENERATIONS = 5
     MUTATION = 0.03  # Percentage - 10% = 0.1
     ELITISM = True

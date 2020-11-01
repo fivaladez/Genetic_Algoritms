@@ -72,10 +72,10 @@ class GeneticAlgorithm:
         """"""
         aptitude_function = np.empty(0, dtype=np.float32)
         for chromosome in population:
-            y = self.get_y(chromosome, self.CURVE_X)
+            y = self.get_y_generator(chromosome, self.CURVE_X)
             error = 0  # Getting the error from comparing curves
-            for base, new in zip(self.CURVE_Y, y):
-                error += abs(base - new)
+            for point_base_y in self.CURVE_Y:
+                error += abs(point_base_y - next(y))
             aptitude_function = np.append(aptitude_function, [error])
 
         return aptitude_function
