@@ -1,19 +1,20 @@
-from genetic_algorithm_curve_adjust import GeneticAlgorithm
+from genetic_algorithm_curve_adjust_2 import GeneticAlgorithm
 
 if __name__ == '__main__':
-    # Fixed values 77.3781, 76.96017
-    X, Y = 1.5, 77.3781
-    POPULATION_SIZE = 200
-    CHROMOSOME_SIZE = 7
-    GENERATIONS = 10
+    CURVE_CONSTANTS = [8, 25, 4, 45, 10, 17, 35]  # A, B, C, D, E, F, G
+    WEIGHT = 5
+    POPULATION_SIZE = 500
+    GENERATIONS = 5
+    MUTATION = 0.03  # Percentage - 10% = 0.1
+    ELITISM = True
     """
-    # A=1,    B=2,    C=6,     D=3.2,  E=0.5,  F=1,    G=7
-    # A'=25,  B'=51,  C'=153,  D'=81,  E'=12,  F'=25,  G'=178
-    # Where A' = A * 25.5
+    # A=8,    B=25,    C=4,     D=45,    E=10,   F=17,    G=35
+    # A'=40,  B'=125,  C'=20,   D'=225,  E'=50,  F'=85,   G'=175
+    # Where A' = A * weight; weight = 5
     """
 
     # Getting random initial population
-    curve_adjust = GeneticAlgorithm(X, Y, POPULATION_SIZE, CHROMOSOME_SIZE)
+    curve_adjust = GeneticAlgorithm(CURVE_CONSTANTS, WEIGHT, POPULATION_SIZE, MUTATION, ELITISM)
     parent_population = curve_adjust.get_random_population()
 
     # Getting generations

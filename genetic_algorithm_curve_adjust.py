@@ -146,20 +146,17 @@ class GeneticAlgorithm:
         contenders_indexes = np.random.randint(0, self.POPULATION_SIZE, n_contenders)
 
         # Looking for the winner
-        winner_index = -1
+        winner_index = contenders_indexes[0]
         for index in contenders_indexes:
-            if winner_index != -1:
-                if abs(aptitude_function[winner_index]) > abs(aptitude_function[index]):
-                    winner_index = index
-            else:
+            if abs(aptitude_function[winner_index]) > abs(aptitude_function[index]):
                 winner_index = index
 
         return population[winner_index]
 
     def reproduction(self, chromosome_x, chromosome_y):
         """"""
-        father = chromosome_x[:]
-        mother = chromosome_y[:]
+        father = np.copy(chromosome_x)
+        mother = np.copy(chromosome_y)
         cut_point = np.random.randint(0, 8 * (self.CHROMOSOME_SIZE - 1), dtype=np.uint8)
 
         if cut_point % 8 == 0:
@@ -167,19 +164,18 @@ class GeneticAlgorithm:
             index = int((cut_point / 8) - 1)
 
             # Adding the chunks - [father ... mother]
-            son = father[:index + 1]
-            son = np.append(son, mother[index + 1:])
+            son = np.copy(father[:index + 1])
+            son = np.append(son, np.copy(mother[index + 1:]))
 
             # Adding the chunks - [mother ... father]
-            daughter = mother[:index + 1]
-            daughter = np.append(daughter, father[index + 1:])
+            daughter = np.copy(mother[:index + 1])
+            daughter = np.append(daughter, np.copy(father[index + 1:]))
 
-            print("Index {}".format(index))
-            # print("Son {}, Daughter {}".format(son, daughter))
+            print("Index {}, Son {}, Daughter {}".format(index, son, daughter))
 
         else:
             # Getting indexes - [first_part ... cut_part ... second_part]
-            first_index = np.uint8(cut_point // 8)
+            first_index = cut_point // 8
             second_index = first_index + 2  # Skipping the cut point
 
             # Getting cut points - 1 byte - 8 bits - 0...255
@@ -188,7 +184,7 @@ class GeneticAlgorithm:
 
             # Getting bits from each byte - Example: 1 byte = [2 bits: 6 bits]
             first_cut_index = np.uint8(cut_point % 8)
-            second_cut_index = 8 - first_cut_index
+            second_cut_index = np.uint8(8 - first_cut_index)
 
             """ Example:
              father_cut_point = 134, mother_cut_point = 203
@@ -209,14 +205,14 @@ class GeneticAlgorithm:
             daughter_cut_point = first_cut_part + second_cut_part
 
             # Adding the chunks [father ... cut point ... mother]
-            son = father[:first_index + 1]
+            son = np.copy(father[:first_index + 1])
             son = np.append(son, [son_cut_point])
-            son = np.append(son, mother[second_index:])
+            son = np.append(son, np.copy(mother[second_index:]))
 
             # Adding the chunks [mother ... cut point ... father]
-            daughter = mother[:first_index + 1]
+            daughter = np.copy(mother[:first_index + 1])
             daughter = np.append(daughter, [daughter_cut_point])
-            daughter = np.append(daughter, father[second_index:])
+            daughter = np.append(daughter, np.copy(father[second_index:]))
 
             print("Cut index {} - Values {}, {}".format(first_index + 1, father[first_index + 1],
                                                         mother[first_index + 1]))
