@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import pdb
 
 
 class GeneticAlgorithm:
@@ -190,7 +191,8 @@ class GeneticAlgorithm:
         plt.figure(2)
         plt.plot(self.CURVE_X, self.get_y(best_chromosome[0], self.CURVE_X), color="red")
         plt.grid(color="gray", linestyle="--")
-        plt.title("Current Curve {}, {}".format(best_chromosome[0] / self.WEIGHT, best_chromosome[1]))
+        plt.title(
+            "Current Curve {}, {}".format(best_chromosome[0] / self.WEIGHT, best_chromosome[1]))
         plt.show(block=False)
 
         plt.figure(3)
@@ -237,6 +239,27 @@ class GeneticAlgorithm:
             print("Gen mutated original {}".format(population[population_index][chromosome_index]))
             print("Chromosome mutated original {}".format(population[population_index]))
 
+    def get_population_with_elitism(self, population, child_population, aptitude_function,
+                                    child_aptitude_function):
+        """"""
+        # Join the two populations and aptitude functions
+        new_population = np.copy(population)
+        new_population = np.append(new_population, child_population, axis=0)
+        new_aptitude_function = np.copy(aptitude_function)
+        new_aptitude_function = np.append(new_aptitude_function, child_aptitude_function, axis=0)
+
+        # Getting an ordered list of tuples with (index, aptitude function value)
+        indexes = np.arange(0, new_population.shape[0])
+        mapping_table = [(k, v) for k, v in zip(indexes, new_aptitude_function)]
+        mapping_table.sort(key=lambda tup: tup[1])
+
+        # Getting the first half of the new ordered population
+        ordered_population = np.empty((0, self.CHROMOSOME_SIZE), dtype=np.uint8)
+        for index, aptitude_function_value in mapping_table[:self.POPULATION_SIZE]:
+            ordered_population = np.append(ordered_population, [new_population[index]], axis=0)
+
+        return ordered_population
+
     def get_next_generation(self, population):
         """"""
         aptitude_function = self.get_aptitude_function(population)
@@ -267,15 +290,23 @@ class GeneticAlgorithm:
 
             childes_population = np.append(child_population, [son], axis=0)
 
-        # Getting new population with some mutations
-        self.add_mutation(child_population)
+        if self.ELITISM:
+            child_aptitude_function = self.get_aptitude_function(child_population)
+            child_population = self.get_population_with_elitism(population, child_population,
+                                                                aptitude_function,
+                                                                child_aptitude_function)
+            self.add_mutation(child_population)
+            child_aptitude_function = self.get_aptitude_function(child_population)
+        else:
+            # Getting new population with some mutations
+            self.add_mutation(child_population)
 
-        # Getting the new aptitude function from new population
-        aptitude_function = self.get_aptitude_function(child_population)
+            # Getting the new aptitude function from new population
+            child_aptitude_function = self.get_aptitude_function(child_population)
 
         # Saving and comparing against the best chromosome from history
         # Example: best_chromosome = [chromosome, aptitude_function]
-        best_chromosome = self.get_best_from_population(child_population, aptitude_function)
+        best_chromosome = self.get_best_from_population(child_population, child_aptitude_function)
         if self.best_chromosome:
             if self.best_chromosome[1] > best_chromosome[1]:
                 self.best_chromosome = best_chromosome
@@ -286,4 +317,4 @@ class GeneticAlgorithm:
         self.aptitude_function_history = np.append(self.aptitude_function_history,
                                                    best_chromosome[1])
 
-        return child_population, aptitude_function
+        return child_population, child_aptitude_function
