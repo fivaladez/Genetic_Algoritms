@@ -6,7 +6,8 @@ if __name__ == '__main__':
     POPULATION_SIZE = 200
     GENERATIONS = 50
     MUTATION = 1  # Percentage - 10% = 0.1
-    ELITISM = True
+    ELITISM = False
+    MUTATION_DOUBLE = True
     """
     # A=8,    B=25,    C=4,     D=45,    E=10,   F=17,    G=35
     # A'=40,  B'=125,  C'=20,   D'=225,  E'=50,  F'=85,   G'=175
@@ -14,7 +15,7 @@ if __name__ == '__main__':
     """
 
     # Getting random initial population
-    curve_adjust = GeneticAlgorithm(CURVE_CONSTANTS, WEIGHT, POPULATION_SIZE, MUTATION, ELITISM)
+    curve_adjust = GeneticAlgorithm(CURVE_CONSTANTS, WEIGHT, POPULATION_SIZE, MUTATION, ELITISM, MUTATION_DOUBLE)
     parent_population = curve_adjust.get_random_population()
 
     # Getting generations

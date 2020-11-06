@@ -8,7 +8,7 @@ import pdb
 class GeneticAlgorithm:
     """"""
 
-    def __init__(self, curve_constants, weight, population_size, mutation, elitism):
+    def __init__(self, curve_constants, weight, population_size, mutation, elitism, mutation_double):
         """
         Initialize all the global variables needed.
         :param curve_constants: List with all the constanst to use in the ecuation for the curve
@@ -26,6 +26,7 @@ class GeneticAlgorithm:
         self.CURVE_Y = self.get_y(self.CURVE_CONSTANTS * self.WEIGHT, self.CURVE_X)
         self.MUTATION = abs(float(mutation))
         self.ELITISM = elitism if elitism is True or elitism is False else False
+        self.MUTATION_DOUBLE = mutation_double if mutation_double is True or elitism is False else False
 
     def get_y(self, chromosome, x):
         """
@@ -182,29 +183,31 @@ class GeneticAlgorithm:
         """"""
         best_chromosome = self.get_best_from_population(population, aptitude_function)
 
-        plt.figure(1)
+        plt.figure(1, figsize=(12, 8))
+        plt.subplot(211)
         plt.plot(self.CURVE_X, self.CURVE_Y, color="blue")
         plt.grid(color="gray", linestyle="--")
         plt.title("Base Curve {}".format(self.CURVE_CONSTANTS))
         plt.show(block=False)
 
-        plt.figure(2)
+        plt.subplot(212)
         plt.plot(self.CURVE_X, self.get_y(best_chromosome[0], self.CURVE_X), color="red")
         plt.grid(color="gray", linestyle="--")
         plt.title(
             "Current Curve {}, {}".format(best_chromosome[0] / self.WEIGHT, best_chromosome[1]))
         plt.show(block=False)
 
-        plt.figure(3)
+        plt.figure(2)
         plt.plot(np.arange(0, generation, dtype=np.uint16), self.aptitude_function_history)
         plt.grid(color="gray", linestyle="--", linewidth=1, alpha=.4)
         plt.title("Closest to 0: {}".format(self.aptitude_function_history[-1]))
         plt.show(block=False)
         plt.pause(1)
 
-        plt.figure(2)
+        plt.figure(1)
+        plt.subplot(212)
         plt.clf()
-        plt.figure(3)
+        plt.figure(2)
         plt.clf()
 
     def add_mutation(self, population):
@@ -228,16 +231,17 @@ class GeneticAlgorithm:
             print("Gen mutated original {}".format(population[population_index][chromosome_index]))
             print("Chromosome mutated original {}".format(population[population_index]))
 
-            chromosome_index = np.random.randint(0, self.CHROMOSOME_SIZE)
-            print("\nChromosome {}, Index {}".format(chromosome, chromosome_index))
-            gen = chromosome[chromosome_index]
-            gen_index = np.random.randint(1, gen_size + 1)  # You need to start from 1
-            print("Gen {}, Index (bit) {}".format(gen, gen_index))
-            gen ^= (1 << (gen_index - 1))
-            print("Gen mutated {}, Mask {}".format(gen, (1 << gen_index)))
-            population[population_index][chromosome_index] = gen
-            print("Gen mutated original {}".format(population[population_index][chromosome_index]))
-            print("Chromosome mutated original {}".format(population[population_index]))
+            if self.MUTATION_DOUBLE:
+                chromosome_index = np.random.randint(0, self.CHROMOSOME_SIZE)
+                print("\nChromosome {}, Index {}".format(chromosome, chromosome_index))
+                gen = chromosome[chromosome_index]
+                gen_index = np.random.randint(1, gen_size + 1)  # You need to start from 1
+                print("Gen {}, Index (bit) {}".format(gen, gen_index))
+                gen ^= (1 << (gen_index - 1))
+                print("Gen mutated {}, Mask {}".format(gen, (1 << gen_index)))
+                population[population_index][chromosome_index] = gen
+                print("Gen mutated original {}".format(population[population_index][chromosome_index]))
+                print("Chromosome mutated original {}".format(population[population_index]))
 
     def get_population_with_elitism(self, population, child_population, aptitude_function,
                                     child_aptitude_function):
