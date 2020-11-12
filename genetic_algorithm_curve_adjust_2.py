@@ -184,17 +184,14 @@ class GeneticAlgorithm:
         best_chromosome = self.get_best_from_population(population, aptitude_function)
 
         plt.figure(1, figsize=(12, 8))
-        plt.subplot(211)
-        plt.plot(self.CURVE_X, self.CURVE_Y, color="blue")
+        plt.plot(self.CURVE_X, self.CURVE_Y, color="blue", label="Base Curve")
         plt.grid(color="gray", linestyle="--")
-        plt.title("Base Curve {}".format(self.CURVE_CONSTANTS))
-        plt.show(block=False)
-
-        plt.subplot(212)
-        plt.plot(self.CURVE_X, self.get_y(best_chromosome[0], self.CURVE_X), color="red")
-        plt.grid(color="gray", linestyle="--")
-        plt.title(
-            "Current Curve {}, {}".format(best_chromosome[0] / self.WEIGHT, best_chromosome[1]))
+        plt.title("Base Curve {} - Current Curve {}, {}".format(self.CURVE_CONSTANTS,
+                                                                best_chromosome[0] / self.WEIGHT,
+                                                                best_chromosome[1]))
+        plt.plot(self.CURVE_X, self.get_y(best_chromosome[0], self.CURVE_X), color="red",
+                 label="Current Curve")
+        plt.legend()
         plt.show(block=False)
 
         plt.figure(2)
